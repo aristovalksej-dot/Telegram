@@ -451,6 +451,7 @@ class ClientConnection:
             return
 
         constructor = struct.unpack_from('<I', data, 0)[0]
+        logger.info(f"{self.addr}: RPC constructor=0x{constructor:08x}, data_len={len(data)}")
 
         # Handle message container
         if constructor == MSG_CONTAINER:
@@ -471,6 +472,8 @@ class ClientConnection:
 
         # Unwrap invokeWithLayer / initConnection
         actual_constructor, actual_data = unwrap_layers(data, ctx)
+        if actual_constructor != constructor:
+            logger.info(f"{self.addr}: Unwrapped to constructor=0x{actual_constructor:08x}")
 
         if actual_constructor == MSGS_ACK:
             return
@@ -488,6 +491,7 @@ class ClientConnection:
         response = dispatch_rpc(actual_constructor, actual_data if actual_data is not data else data, ctx)
 
         if response is None:
+            logger.warning(f"{self.addr}: No response for constructor=0x{actual_constructor:08x}")
             return
 
         # Service messages are sent bare, RPC calls are wrapped in rpc_result
