@@ -301,6 +301,11 @@ class ClientConnection:
 
         await self.writer.drain()
 
+    async def _send_transport_error(self, error_code: int):
+        """Send a transport-level error (e.g. -404 for unknown auth_key)."""
+        self._encrypt_and_write(struct.pack('<i', error_code))
+        await self.writer.drain()
+
     async def _process_message(self, raw_data: bytes):
         """Process a raw MTProto message (unencrypted or encrypted)."""
         if len(raw_data) < 8:
@@ -388,7 +393,8 @@ class ClientConnection:
                 self.server_salt = row['server_salt']
                 self.user_id = row['user_id']
             else:
-                logger.error(f"Unknown auth_key_id: 0x{auth_key_id & 0xFFFFFFFFFFFFFFFF:016x}, closing connection")
+                logger.warning(f"Unknown auth_key_id: 0x{auth_key_id & 0xFFFFFFFFFFFFFFFF:016x}, sending -404 transport error")
+                await self._send_transport_error(-404)
                 self.writer.close()
                 return
 
