@@ -72,8 +72,8 @@ def build_rpc_answer_dropped() -> bytes:
 
 def build_auth_sent_code(phone_code_hash: str, code_length: int) -> bytes:
     s = TLSerializer()
-    s.write_uint32(0x2390fe44)  # auth.sentCode
-    s.write_int32(2)  # flags: has next_type
+    s.write_uint32(0x5e002502)  # auth.sentCode (NOT 0x2390fe44 which is sentCodeSuccess)
+    s.write_int32(6)  # flags: bit 1 = next_type, bit 2 = timeout
 
     # type: auth.sentCodeTypeApp
     s.write_uint32(0x3dbb5986)  # sentCodeTypeApp
@@ -81,10 +81,10 @@ def build_auth_sent_code(phone_code_hash: str, code_length: int) -> bytes:
 
     s.write_string(phone_code_hash)
 
-    # next_type: auth.codeTypeSms
+    # next_type: auth.codeTypeSms (flags.1)
     s.write_uint32(0x72a3158c)  # codeTypeSms
 
-    s.write_int32(120)  # timeout
+    s.write_int32(120)  # timeout (flags.2)
     return s.get_bytes()
 
 
