@@ -33,7 +33,7 @@ def dispatch_rpc(constructor: int, data: bytes, ctx: RPCContext) -> bytes:
     handler = HANDLERS.get(constructor)
     if handler is None:
         logger.warning(f"Unhandled constructor: 0x{constructor:08x}")
-        return R.build_bool(True)
+        return R.build_rpc_error_raw(400, "INPUT_METHOD_INVALID")
     try:
         return handler(data, ctx)
     except Exception as e:
