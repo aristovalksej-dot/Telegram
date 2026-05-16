@@ -44,7 +44,7 @@ _connections_lock = asyncio.Lock() if hasattr(asyncio, 'Lock') else None
 import collections
 _rate_limits: dict[int, list] = collections.defaultdict(list)
 RATE_LIMIT_WINDOW = 1.0  # seconds
-RATE_LIMIT_MAX = 30  # max requests per window
+RATE_LIMIT_MAX = 200  # max requests per window (high for initial login burst)
 
 
 def _register_connection(user_id: int, conn):
@@ -441,7 +441,7 @@ class ClientConnection:
         # Rate limiting
         if self.user_id and not _check_rate_limit(self.user_id):
             logger.warning(f"Rate limit exceeded for user {self.user_id}")
-            error_response = build_rpc_result(msg_id, build_rpc_error(420, "FLOOD_WAIT_1"))
+            error_response = build_rpc_error(msg_id, 420, "FLOOD_WAIT_1")
             encrypted = encrypt_message(
                 error_response, self.auth_key, self.session_id or 0,
                 self.server_salt, seq_no=self.seq_no
