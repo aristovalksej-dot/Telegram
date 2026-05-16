@@ -1979,7 +1979,7 @@ def handle_account_get_global_privacy_settings(data: bytes, ctx: RPCContext) -> 
 
 def handle_account_get_notify_settings(data: bytes, ctx: RPCContext) -> bytes:
     s = TLSerializer()
-    s.write_uint32(0xdbbaedcb)  # peerNotifySettings
+    s.write_uint32(0x99622c0c)  # peerNotifySettings
     s.write_int32(0)  # flags — no overrides
     return s.get_bytes()
 
@@ -2019,7 +2019,7 @@ def handle_account_reset_authorization(data: bytes, ctx: RPCContext) -> bytes:
 
 def handle_account_get_saved_ringtones(data: bytes, ctx: RPCContext) -> bytes:
     s = TLSerializer()
-    s.write_uint32(0xfbf6e4b1)  # account.savedRingtonesNotModified
+    s.write_uint32(0xfbf6e8b1)  # account.savedRingtonesNotModified
     return s.get_bytes()
 
 def handle_account_get_channel_default_emoji_statuses(data: bytes, ctx: RPCContext) -> bytes:
@@ -2101,7 +2101,7 @@ def handle_messages_get_all_chats(data: bytes, ctx: RPCContext) -> bytes:
 
 def handle_messages_get_onlines(data: bytes, ctx: RPCContext) -> bytes:
     s = TLSerializer()
-    s.write_uint32(0xf49d7eb6)  # chatOnlines
+    s.write_uint32(0xf041e250)  # chatOnlines
     s.write_int32(0)  # onlines count
     return s.get_bytes()
 
@@ -2144,7 +2144,7 @@ def handle_messages_toggle_peer_translations(data: bytes, ctx: RPCContext) -> by
 
 def handle_messages_get_pinned_dialogs(data: bytes, ctx: RPCContext) -> bytes:
     s = TLSerializer()
-    s.write_uint32(0xd63a1b4b)  # messages.peerDialogs
+    s.write_uint32(0x3371c354)  # messages.peerDialogs
     s.write_uint32(0x1cb5c415); s.write_int32(0)  # dialogs
     s.write_uint32(0x1cb5c415); s.write_int32(0)  # messages
     s.write_uint32(0x1cb5c415); s.write_int32(0)  # chats
@@ -2264,7 +2264,7 @@ def handle_channels_get_send_as(data: bytes, ctx: RPCContext) -> bytes:
 
 def handle_channels_get_inactive_channels(data: bytes, ctx: RPCContext) -> bytes:
     s = TLSerializer()
-    s.write_uint32(0xa68b0b97)  # messages.inactiveChats
+    s.write_uint32(0xa927fec5)  # messages.inactiveChats
     s.write_uint32(0x1cb5c415); s.write_int32(0)  # dates
     s.write_uint32(0x1cb5c415); s.write_int32(0)  # chats
     s.write_uint32(0x1cb5c415); s.write_int32(0)  # users

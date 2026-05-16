@@ -176,7 +176,7 @@ def build_user_full(user) -> bytes:
     s.write_string(user['bio'] or '')
 
     # settings
-    s.write_uint32(0xa1c69e91)  # peerSettings
+    s.write_uint32(0xf47741f7)  # peerSettings
     s.write_int32(0)  # flags
 
     # notifySettings
@@ -736,7 +736,7 @@ def build_account_privacy_rules() -> bytes:
 
 def build_wall_papers() -> bytes:
     s = TLSerializer()
-    s.write_uint32(0x1c199571)  # account.wallPapersNotModified
+    s.write_uint32(0x1c199183)  # account.wallPapersNotModified
     return s.get_bytes()
 
 
@@ -1314,7 +1314,7 @@ def build_account_days_ttl(days: int) -> bytes:
 
 def build_global_privacy_settings() -> bytes:
     s = TLSerializer()
-    s.write_uint32(0x734c4ccb)  # globalPrivacySettings
+    s.write_uint32(0xfe41b34f)  # globalPrivacySettings
     s.write_int32(0)  # flags
     return s.get_bytes()
 
@@ -1325,7 +1325,7 @@ def build_global_privacy_settings() -> bytes:
 
 def build_checked_history_import_peer() -> bytes:
     s = TLSerializer()
-    s.write_uint32(0xa480b51d)  # messages.checkedHistoryImportPeer
+    s.write_uint32(0xa24de717)  # messages.checkedHistoryImportPeer
     s.write_string("")  # confirm_text
     return s.get_bytes()
 
@@ -1371,7 +1371,7 @@ def build_update_user_typing(user_id: int, peer_id: int) -> bytes:
     s.write_uint32(0x74ae4240)  # updates
     s.write_uint32(0x1cb5c415)
     s.write_int32(1)
-    s.write_uint32(0xc01e857f)  # updateUserTyping
+    s.write_uint32(0x2A17BF5C)  # updateUserTyping
     s.write_int64(user_id)
     s.write_uint32(0x16bf744e)  # sendMessageTypingAction
     s.write_uint32(0x1cb5c415)  # users
@@ -1388,7 +1388,7 @@ def build_update_read_history(peer_id: int, max_id: int, pts: int) -> bytes:
     s.write_uint32(0x74ae4240)  # updates
     s.write_uint32(0x1cb5c415)
     s.write_int32(1)
-    s.write_uint32(0x9c974fdf)  # updateReadHistoryInbox
+    s.write_uint32(0x9E84BC99)  # updateReadHistoryInbox
     s.write_int32(0)  # flags
     s.write_uint32(0x59511722)  # peerUser
     s.write_int64(peer_id)
