@@ -488,11 +488,24 @@ class ClientConnection:
         }
 
         # Dispatch to handler
-        response = dispatch_rpc(actual_constructor, actual_data if actual_data is not data else data, ctx)
+        try:
+            response = dispatch_rpc(actual_constructor, actual_data if actual_data is not data else data, ctx)
+        except Exception as e:
+            logger.error(f"{self.addr}: Exception in handler for 0x{actual_constructor:08x}: {e}", exc_info=True)
+            result_data = build_rpc_error(msg_id, 400, "INTERNAL_ERROR")
+            encrypted = encrypt_message(
+                result_data, self.auth_key, self.session_id or 0,
+                self.server_salt, seq_no=self.seq_no
+            )
+            self.seq_no += 2
+            await self._send_message(encrypted)
+            return
 
         if response is None:
             logger.warning(f"{self.addr}: No response for constructor=0x{actual_constructor:08x}")
             return
+
+        logger.info(f"{self.addr}: Sending response for 0x{actual_constructor:08x}, response_len={len(response)}")
 
         # Service messages are sent bare, RPC calls are wrapped in rpc_result
         if actual_constructor in BARE_RESPONSE_CONSTRUCTORS:
@@ -501,13 +514,16 @@ class ClientConnection:
             result_data = build_rpc_result(msg_id, response)
 
         # Encrypt and send
-        encrypted = encrypt_message(
-            result_data, self.auth_key, self.session_id or 0,
-            self.server_salt, seq_no=self.seq_no
-        )
-        self.seq_no += 2
-
-        await self._send_message(encrypted)
+        try:
+            encrypted = encrypt_message(
+                result_data, self.auth_key, self.session_id or 0,
+                self.server_salt, seq_no=self.seq_no
+            )
+            self.seq_no += 2
+            await self._send_message(encrypted)
+            logger.info(f"{self.addr}: Response sent successfully, encrypted_len={len(encrypted)}")
+        except Exception as e:
+            logger.error(f"{self.addr}: Failed to encrypt/send response: {e}", exc_info=True)
 
 
 def import_time():

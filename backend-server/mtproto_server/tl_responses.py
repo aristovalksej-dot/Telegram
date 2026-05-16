@@ -531,9 +531,9 @@ def build_updates_channel_difference_empty() -> bytes:
 def build_config() -> bytes:
     s = TLSerializer()
     s.write_uint32(0xcc1a241e)  # config
-    s.write_int32(0)  # flags
+    s.write_int32(1)  # flags (bit 0 = tmp_sessions present)
     s.write_int32(int(time.time()))  # date
-    s.write_int32(0)  # expires
+    s.write_int32(int(time.time()) + 3600)  # expires (1 hour from now)
     s.write_bool(False)  # test_mode
     s.write_int32(1)  # this_dc
 
