@@ -620,8 +620,64 @@ def build_terms_of_service() -> bytes:
 
 
 def build_countries_list() -> bytes:
+    """Build help.countriesList with common countries."""
+    # List of (iso2, name, calling_code, country_code_patterns)
+    countries_data = [
+        ("RU", "Russia", "7", ["### ### ## ##"]),
+        ("US", "United States", "1", ["### ### ####"]),
+        ("GB", "United Kingdom", "44", ["#### ######"]),
+        ("UA", "Ukraine", "380", ["## ### ## ##"]),
+        ("DE", "Germany", "49", ["### #######"]),
+        ("FR", "France", "33", ["# ## ## ## ##"]),
+        ("IT", "Italy", "39", ["### ### ####"]),
+        ("ES", "Spain", "34", ["### ## ## ##"]),
+        ("BR", "Brazil", "55", ["## ##### ####"]),
+        ("IN", "India", "91", ["##### #####"]),
+        ("CN", "China", "86", ["### #### ####"]),
+        ("JP", "Japan", "81", ["## #### ####"]),
+        ("KR", "South Korea", "82", ["## #### ####"]),
+        ("TR", "Turkey", "90", ["### ### ## ##"]),
+        ("PL", "Poland", "48", ["### ### ###"]),
+        ("KZ", "Kazakhstan", "7", ["### ### ## ##"]),
+        ("BY", "Belarus", "375", ["## ### ## ##"]),
+        ("UZ", "Uzbekistan", "998", ["## ### ## ##"]),
+        ("AE", "United Arab Emirates", "971", ["## ### ####"]),
+        ("IL", "Israel", "972", ["## ### ####"]),
+    ]
+
     s = TLSerializer()
-    s.write_uint32(0x93cc1f32)  # help.countriesListNotModified
+    s.write_uint32(0x87d0759e)  # help.countriesList
+
+    # countries: Vector<help.Country>
+    s.write_uint32(0x1cb5c415)  # vector
+    s.write_int32(len(countries_data))
+
+    for iso2, name, code, patterns in countries_data:
+        s.write_uint32(0xc3878e23)  # help.country
+        s.write_int32(2)  # flags (bit 1 = name set)
+        s.write_string(iso2)  # iso2
+        s.write_string(name)  # default_name
+        s.write_string(name)  # name (flags.1)
+
+        # country_codes: Vector<help.CountryCode>
+        s.write_uint32(0x1cb5c415)  # vector
+        s.write_int32(1)
+        # help.countryCode
+        s.write_uint32(0x4203c5ef)  # help.countryCode
+        cc_flags = 0
+        if patterns:
+            cc_flags |= 2  # bit 1 = patterns present
+        s.write_int32(cc_flags)  # flags
+        s.write_string(code)  # country_code
+        # bit 0 (prefixes) not set — skip prefixes
+        if cc_flags & 2:  # patterns present
+            s.write_uint32(0x1cb5c415)
+            s.write_int32(len(patterns))
+            for p in patterns:
+                s.write_string(p)
+
+    s.write_int32(0)  # hash
+
     return s.get_bytes()
 
 
